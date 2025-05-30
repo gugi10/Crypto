@@ -1,6 +1,7 @@
 package com.example.cryptotracker.ui.screens.listings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,7 +42,8 @@ val shimmerBrush = Brush.horizontalGradient(
 
 @Composable
 fun CoinListScreen(
-    viewModel: CoinListViewModel = hiltViewModel()
+    viewModel: CoinListViewModel = hiltViewModel(),
+    onCoinClick: (String) -> Unit // New parameter
 ) {
     val coins by viewModel.coins.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -63,7 +65,10 @@ fun CoinListScreen(
         } else { // Show the actual list of coins
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(coins) { coin ->
-                    CoinListItem(coin = coin)
+                    CoinListItem(
+                        coin = coin,
+                        onItemClick = { onCoinClick(coin.id) } // Pass coin id to lambda
+                    )
                     Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 }
             }
@@ -122,10 +127,14 @@ fun CoinListItemPlaceholder(brush: Brush) {
 
 
 @Composable
-fun CoinListItem(coin: Coin) {
+fun CoinListItem(
+    coin: Coin,
+    onItemClick: (String) -> Unit // New parameter for click handling
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onItemClick(coin.id) } // Make the row clickable
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -210,7 +219,8 @@ fun CoinListItemPreview() {
                 atlChangePercentage = 50987.0,
                 atlDate = "2013-07-06T00:00:00.000Z",
                 lastUpdated = "2023-10-27T10:00:00.000Z"
-            )
+            ),
+            onItemClick = {} // Pass empty lambda for preview
         )
     }
 }
@@ -255,12 +265,16 @@ fun CoinListScreenWithDataPreview() {
     val previewCoins = listOf(
         Coin("bitcoin", "btc", "Bitcoin", "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400", 34567.89, 678901234567,1,1234567890.0, 2.34,19000000.0,21000000.0,21000000.0,69045.0, -50.0, "2021-11-10T14:24:11.849Z",67.81, 50987.0, "2013-07-06T00:00:00.000Z", "2023-10-27T10:00:00.000Z"),
         Coin("ethereum", "eth", "Ethereum", "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628", 1800.55, 216987654321, 2, 987654321.0, -0.55, 120000000.0,0.0,0.0,4878.0,-63.0,"2021-11-10T14:24:11.849Z",0.43,420000.0,"2015-10-20T00:00:00.000Z","2023-10-27T10:00:00.000Z")
-
     )
     CryptoTrackerTheme {
+        // For preview, CoinListScreen needs onCoinClick.
+        // We are directly previewing LazyColumn with CoinListItem here for simplicity with data.
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(previewCoins) { coin ->
-                CoinListItem(coin = coin)
+                CoinListItem(
+                    coin = coin,
+                    onItemClick = {} // Pass empty lambda for preview
+                )
                 Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             }
         }
