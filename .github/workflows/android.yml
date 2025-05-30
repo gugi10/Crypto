@@ -1,0 +1,45 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ "main" ] # Adjust if your main branch is different (e.g., "master")
+  pull_request:
+    branches: [ "main" ] # Adjust if your main branch is different
+
+jobs:
+  test_and_build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin' # Or 'adopt', 'zulu', etc.
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v3 # Leverages Gradle build cache and dependency cache
+
+    - name: Grant execute permissions for gradlew
+      run: chmod +x ./gradlew
+
+    - name: Run unit tests
+      run: ./gradlew testDebugUnitTest
+
+    - name: Build release APK
+      run: ./gradlew assembleRelease 
+      # Note: Actual signing depends on keystore and alias passwords being available.
+      # This step primarily checks if the release build can be assembled.
+      # For true signed APKs, you'd need to securely provide signing credentials
+      # (e.g., via GitHub Secrets) and configure them in build.gradle.kts.
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: app/build/outputs/apk/release/app-release.apk # Default path for Android Gradle Plugin
+        if-no-files-found: error # Optional: fail if APK not found
