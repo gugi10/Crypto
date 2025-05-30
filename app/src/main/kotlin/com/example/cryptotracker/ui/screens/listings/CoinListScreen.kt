@@ -7,13 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,36 +38,75 @@ val shimmerBrush = Brush.horizontalGradient(
     )
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinListScreen(
     viewModel: CoinListViewModel = hiltViewModel(),
-    onCoinClick: (String) -> Unit // New parameter
+    onCoinClick: (String) -> Unit 
 ) {
-    val coins by viewModel.coins.collectAsState()
+    val coins by viewModel.coins.collectAsState() // This is now the filtered list
     val isLoading by viewModel.isLoading.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState() // Collect search query from ViewModel
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (isLoading && coins.isEmpty()) { // Show shimmer only if loading and list is currently empty
-            LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
-                items(15) { // Show 15 placeholder items
-                    CoinListItemPlaceholder(brush = shimmerBrush)
-                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { viewModel.onSearchQueryChanged(it) }, // Update ViewModel
+                        placeholder = { Text("Search coins...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search Icon") },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.onSearchQueryChanged("") }) { // Clear via ViewModel
+                                    Icon(Icons.Filled.Clear, contentDescription = "Clear Search")
+                                }
+                            }
+                        },
+                        colors = TextFieldDefaults.colors( 
+                            focusedContainerColor = Color.Transparent, 
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            // isLoading reflects initial load or refresh. 
+            // coins list is already filtered by the ViewModel.
+            if (isLoading && coins.isEmpty() && searchQuery.isBlank()) { // Show shimmer only on initial empty load (no search)
+                LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
+                    items(15) { 
+                        CoinListItemPlaceholder(brush = shimmerBrush) 
+                        Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                    }
+                }
+            } else if (!isLoading && coins.isEmpty() && searchQuery.isNotEmpty()) {
+                Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+                    Text("No coins found for \"$searchQuery\".")
+                }
+            } else if (!isLoading && coins.isEmpty() && searchQuery.isBlank()) {
+                 Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+                    Text("No coins available. Pull to refresh.")
                 }
             }
-        } else if (!isLoading && coins.isEmpty()) { // Show empty message if not loading and list is empty
-            Text(
-                text = "No coins found. Pull to refresh or check network.",
-                modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.bodyLarge
-            )
-        } else { // Show the actual list of coins
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(coins) { coin ->
-                    CoinListItem(
-                        coin = coin,
-                        onItemClick = { onCoinClick(coin.id) } // Pass coin id to lambda
-                    )
-                    Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            else { // Display the (potentially filtered) list of coins
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(coins) { coin -> 
+                        CoinListItem(
+                            coin = coin,
+                            onItemClick = { onCoinClick(coin.id) } 
+                        )
+                        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    }
                 }
             }
         }
@@ -129,12 +166,12 @@ fun CoinListItemPlaceholder(brush: Brush) {
 @Composable
 fun CoinListItem(
     coin: Coin,
-    onItemClick: (String) -> Unit // New parameter for click handling
+    onItemClick: (String) -> Unit 
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick(coin.id) } // Make the row clickable
+            .clickable { onItemClick(coin.id) } 
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -174,7 +211,7 @@ fun CoinListItem(
             Text(
                 text = formatPercentage(coin.priceChangePercentage24h),
                 fontSize = 14.sp,
-                color = if ((coin.priceChangePercentage24h ?: 0.0) >= 0) Color(0xFF009688) else Color(0xFFE53935) // Teal/Red
+                color = if ((coin.priceChangePercentage24h ?: 0.0) >= 0) Color(0xFF009688) else Color(0xFFE53935) 
             )
         }
     }
@@ -220,7 +257,7 @@ fun CoinListItemPreview() {
                 atlDate = "2013-07-06T00:00:00.000Z",
                 lastUpdated = "2023-10-27T10:00:00.000Z"
             ),
-            onItemClick = {} // Pass empty lambda for preview
+            onItemClick = {} 
         )
     }
 }
@@ -237,10 +274,12 @@ fun CoinListItemPlaceholderPreview() {
 @Composable
 fun CoinListScreenShimmerPreview() {
     CryptoTrackerTheme {
-        LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
-            items(15) {
-                CoinListItemPlaceholder(brush = shimmerBrush)
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        Box(modifier = Modifier.padding(0.dp)) { 
+            LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
+                items(15) {
+                    CoinListItemPlaceholder(brush = shimmerBrush)
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                }
             }
         }
     }
@@ -250,9 +289,9 @@ fun CoinListScreenShimmerPreview() {
 @Composable
 fun CoinListScreenEmptyStatePreview() {
     CryptoTrackerTheme {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.padding(0.dp).fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "No coins found. Pull to refresh or check network.",
+                text = "No coins available. Pull to refresh.",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -267,15 +306,15 @@ fun CoinListScreenWithDataPreview() {
         Coin("ethereum", "eth", "Ethereum", "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628", 1800.55, 216987654321, 2, 987654321.0, -0.55, 120000000.0,0.0,0.0,4878.0,-63.0,"2021-11-10T14:24:11.849Z",0.43,420000.0,"2015-10-20T00:00:00.000Z","2023-10-27T10:00:00.000Z")
     )
     CryptoTrackerTheme {
-        // For preview, CoinListScreen needs onCoinClick.
-        // We are directly previewing LazyColumn with CoinListItem here for simplicity with data.
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(previewCoins) { coin ->
-                CoinListItem(
-                    coin = coin,
-                    onItemClick = {} // Pass empty lambda for preview
-                )
-                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+         Box(modifier = Modifier.padding(0.dp)) { 
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(previewCoins) { coin ->
+                    CoinListItem(
+                        coin = coin,
+                        onItemClick = {} 
+                    )
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                }
             }
         }
     }
