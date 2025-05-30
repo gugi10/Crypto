@@ -1,0 +1,6 @@
+<resources>
+    <!-- Base application theme for night mode. -->
+    <style name="Theme.CryptoTracker" parent="android:Theme.Material.NoActionBar">
+        <!-- Customize your dark theme here. -->
+    </style>
+</resources>
