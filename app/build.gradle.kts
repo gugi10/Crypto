@@ -76,6 +76,12 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.10.1") // BOM should cover, but explicit for clarity
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0") // BOM should cover
 
+    // Image Loading
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // UI Effects & Animations
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
+
     // Hilt - Dependency Injection
     implementation("com.google.dagger:hilt-android:2.56.2")
     kapt("com.google.dagger:hilt-compiler:2.56.2")
