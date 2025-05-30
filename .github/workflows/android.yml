@@ -31,7 +31,7 @@ jobs:
       run: ./gradlew testDebugUnitTest
 
     - name: Build release APK
-      run: ./gradlew assembleRelease 
+      run: ./gradlew assembleRelease
       # Note: Actual signing depends on keystore and alias passwords being available.
       # This step primarily checks if the release build can be assembled.
       # For true signed APKs, you'd need to securely provide signing credentials

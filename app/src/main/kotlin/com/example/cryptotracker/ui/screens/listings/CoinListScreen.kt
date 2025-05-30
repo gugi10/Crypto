@@ -42,7 +42,7 @@ val shimmerBrush = Brush.horizontalGradient(
 @Composable
 fun CoinListScreen(
     viewModel: CoinListViewModel = hiltViewModel(),
-    onCoinClick: (String) -> Unit 
+    onCoinClick: (String) -> Unit
 ) {
     val coins by viewModel.coins.collectAsState() // This is now the filtered list
     val isLoading by viewModel.isLoading.collectAsState()
@@ -66,8 +66,8 @@ fun CoinListScreen(
                                 }
                             }
                         },
-                        colors = TextFieldDefaults.colors( 
-                            focusedContainerColor = Color.Transparent, 
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                             disabledContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
@@ -80,12 +80,12 @@ fun CoinListScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            // isLoading reflects initial load or refresh. 
+            // isLoading reflects initial load or refresh.
             // coins list is already filtered by the ViewModel.
             if (isLoading && coins.isEmpty() && searchQuery.isBlank()) { // Show shimmer only on initial empty load (no search)
                 LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
-                    items(15) { 
-                        CoinListItemPlaceholder(brush = shimmerBrush) 
+                    items(15) {
+                        CoinListItemPlaceholder(brush = shimmerBrush)
                         Divider(color = Color.LightGray.copy(alpha = 0.5f))
                     }
                 }
@@ -100,10 +100,10 @@ fun CoinListScreen(
             }
             else { // Display the (potentially filtered) list of coins
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(coins) { coin -> 
+                    items(coins) { coin ->
                         CoinListItem(
                             coin = coin,
-                            onItemClick = { onCoinClick(coin.id) } 
+                            onItemClick = { onCoinClick(coin.id) }
                         )
                         Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     }
@@ -166,12 +166,12 @@ fun CoinListItemPlaceholder(brush: Brush) {
 @Composable
 fun CoinListItem(
     coin: Coin,
-    onItemClick: (String) -> Unit 
+    onItemClick: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick(coin.id) } 
+            .clickable { onItemClick(coin.id) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -211,7 +211,7 @@ fun CoinListItem(
             Text(
                 text = formatPercentage(coin.priceChangePercentage24h),
                 fontSize = 14.sp,
-                color = if ((coin.priceChangePercentage24h ?: 0.0) >= 0) Color(0xFF009688) else Color(0xFFE53935) 
+                color = if ((coin.priceChangePercentage24h ?: 0.0) >= 0) Color(0xFF009688) else Color(0xFFE53935)
             )
         }
     }
@@ -257,7 +257,7 @@ fun CoinListItemPreview() {
                 atlDate = "2013-07-06T00:00:00.000Z",
                 lastUpdated = "2023-10-27T10:00:00.000Z"
             ),
-            onItemClick = {} 
+            onItemClick = {}
         )
     }
 }
@@ -274,7 +274,7 @@ fun CoinListItemPlaceholderPreview() {
 @Composable
 fun CoinListScreenShimmerPreview() {
     CryptoTrackerTheme {
-        Box(modifier = Modifier.padding(0.dp)) { 
+        Box(modifier = Modifier.padding(0.dp)) {
             LazyColumn(modifier = Modifier.fillMaxSize().shimmer()) {
                 items(15) {
                     CoinListItemPlaceholder(brush = shimmerBrush)
@@ -306,12 +306,12 @@ fun CoinListScreenWithDataPreview() {
         Coin("ethereum", "eth", "Ethereum", "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628", 1800.55, 216987654321, 2, 987654321.0, -0.55, 120000000.0,0.0,0.0,4878.0,-63.0,"2021-11-10T14:24:11.849Z",0.43,420000.0,"2015-10-20T00:00:00.000Z","2023-10-27T10:00:00.000Z")
     )
     CryptoTrackerTheme {
-         Box(modifier = Modifier.padding(0.dp)) { 
+         Box(modifier = Modifier.padding(0.dp)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(previewCoins) { coin ->
                     CoinListItem(
                         coin = coin,
-                        onItemClick = {} 
+                        onItemClick = {}
                     )
                     Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 }
