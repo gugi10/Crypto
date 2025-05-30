@@ -59,7 +59,7 @@ object NetworkModule {
             writer.endArray()
         }
     }
-    
+
     // Factory for the PricePointListAdapter to be used by Moshi
     object PricePointListJsonAdapterFactory : JsonAdapter.Factory {
         override fun create(type: Type, annotations: Set<Annotation>, moshi: Moshi): JsonAdapter<*>? {

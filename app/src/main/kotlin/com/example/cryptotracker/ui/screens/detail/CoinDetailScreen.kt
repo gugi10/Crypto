@@ -17,9 +17,9 @@ import com.example.cryptotracker.ui.viewmodel.CoinDetailViewModel
 import com.example.cryptotracker.ui.viewmodel.CoinDetailUiState
 import com.example.cryptotracker.data.model.Coin // Import Coin model
 import com.example.cryptotracker.data.model.MarketChart // Import MarketChart model
-import com.example.cryptotracker.ui.theme.CryptoTrackerTheme 
-import androidx.compose.material.icons.Icons 
-import androidx.compose.material.icons.automirrored.filled.ArrowBack 
+import com.example.cryptotracker.ui.theme.CryptoTrackerTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import co.yml.charts.axis.AxisData
@@ -113,7 +113,7 @@ fun CoinDetailContent(uiState: CoinDetailUiState) {
         Text(text = "${coin.name} (${coin.symbol.uppercase()})", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Current Price: ${formatCurrencyValue(coin.currentPrice)}", style = MaterialTheme.typography.titleLarge)
-        
+
         Spacer(modifier = Modifier.height(24.dp))
 
         // Market Chart Section
@@ -164,14 +164,14 @@ fun MarketChartView(marketChart: MarketChart) { // Explicitly use the model from
         Text("Not enough data for chart. (${points.size} points found)")
         return
     }
-    
+
     val stepSize = (points.size / 7).coerceAtLeast(1)
     val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
 
     val xAxisData = AxisData.Builder()
-        .axisStepSize(100.dp) 
+        .axisStepSize(100.dp)
         .backgroundColor(MaterialTheme.colorScheme.surface)
-        .steps(points.size - 1) 
+        .steps(points.size - 1)
         .labelData { index ->
              if (index % stepSize == 0 && index < marketChart.prices.size) {
                 dateFormat.format(Date(marketChart.prices[index].timestamp))
@@ -182,14 +182,14 @@ fun MarketChartView(marketChart: MarketChart) { // Explicitly use the model from
 
     val minYValue = points.minOfOrNull { it.y } ?: 0f
     val maxYValue = points.maxOfOrNull { it.y } ?: 1f
-    
+
     val yAxisData = AxisData.Builder()
-        .steps(4) 
+        .steps(4)
         .backgroundColor(MaterialTheme.colorScheme.surface)
         .labelAndAxisLineColor(MaterialTheme.colorScheme.onSurfaceVariant)
         .labelData { value ->
             val price = value.toDouble()
-            String.format(Locale.US, "$%.2f", price) 
+            String.format(Locale.US, "$%.2f", price)
         }
         // Pass min and max to YCharts if it supports it, or calculate appropriate range.
         // For YCharts, it seems to auto-scale based on data, but explicit control might be needed for some cases.
@@ -214,7 +214,7 @@ fun MarketChartView(marketChart: MarketChart) { // Explicitly use the model from
                     selectionHighlightPopUp = SelectionHighlightPopUp(
                         backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                         labelColor = MaterialTheme.colorScheme.onSurface,
-                        popOffSet = (-12).dp, 
+                        popOffSet = (-12).dp,
                         labelFormatter = { point ->
                             val price = point.y.toDouble()
                             val time = marketChart.prices.getOrNull(points.indexOf(point))?.timestamp
@@ -229,8 +229,8 @@ fun MarketChartView(marketChart: MarketChart) { // Explicitly use the model from
         yAxisData = yAxisData,
         gridLines = GridLines(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
-        paddingRight = 0.dp, 
-        containerPaddingEnd = 8.dp 
+        paddingRight = 0.dp,
+        containerPaddingEnd = 8.dp
     )
 
     LineChart(

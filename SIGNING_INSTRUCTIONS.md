@@ -77,13 +77,13 @@ This method is good for consistency and automated builds (like CI/CD). However, 
         signingConfigs {
             create("release") {
                 // Try to read from environment variables first, then from gradle.properties
-                val storeFileProp = System.getenv("KEYSTORE_FILE") 
+                val storeFileProp = System.getenv("KEYSTORE_FILE")
                     ?: project.findProperty("MYAPP_RELEASE_STORE_FILE")?.toString()
-                val storePasswordProp = System.getenv("KEYSTORE_PASSWORD") 
+                val storePasswordProp = System.getenv("KEYSTORE_PASSWORD")
                     ?: project.findProperty("MYAPP_RELEASE_STORE_PASSWORD")?.toString()
-                val keyAliasProp = System.getenv("KEYSTORE_ALIAS") 
+                val keyAliasProp = System.getenv("KEYSTORE_ALIAS")
                     ?: project.findProperty("MYAPP_RELEASE_KEY_ALIAS")?.toString()
-                val keyPasswordProp = System.getenv("KEYSTORE_ALIAS_PASSWORD") 
+                val keyPasswordProp = System.getenv("KEYSTORE_ALIAS_PASSWORD")
                     ?: project.findProperty("MYAPP_RELEASE_KEY_PASSWORD")?.toString()
 
                 if (storeFileProp != null && storePasswordProp != null && keyAliasProp != null && keyPasswordProp != null) {

@@ -17,14 +17,14 @@ import javax.inject.Inject
 data class CoinDetailUiState(
     val coin: Coin? = null,
     val marketChart: MarketChart? = null,
-    val isLoadingCoinDetail: Boolean = false, 
-    val isLoadingMarketChart: Boolean = false, 
+    val isLoadingCoinDetail: Boolean = false,
+    val isLoadingMarketChart: Boolean = false,
     val error: String? = null
 )
 
 @HiltViewModel
 class CoinDetailViewModel @Inject constructor(
-    private val coinRepository: CoinRepository, 
+    private val coinRepository: CoinRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -70,11 +70,11 @@ class CoinDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val existingError = _uiState.value.error?.takeIf { it != "Error fetching market chart." }
             _uiState.value = _uiState.value.copy(isLoadingMarketChart = true, error = existingError, marketChart = null)
-            
+
             try {
                 // Use the actual repository call
                 val result = coinRepository.getMarketChartData(coinId = coinId, vsCurrency = "usd", days = days)
-                
+
                 result.fold(
                     onSuccess = { marketChartData ->
                         _uiState.value = _uiState.value.copy(
@@ -86,11 +86,11 @@ class CoinDetailViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             error = _uiState.value.error ?: exception.message ?: "Error fetching market chart.",
                             isLoadingMarketChart = false,
-                            marketChart = null 
+                            marketChart = null
                         )
                     }
                 )
-            } catch (e: Exception) { 
+            } catch (e: Exception) {
                  _uiState.value = _uiState.value.copy(
                     error = _uiState.value.error ?: e.message ?: "Unexpected error fetching market chart.",
                     isLoadingMarketChart = false,

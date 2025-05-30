@@ -36,11 +36,11 @@ class CoinListViewModel @Inject constructor(
 
     private val _isLoadingFromRefresh = MutableStateFlow(false)
     private val _initialLoadAttempted = MutableStateFlow(false)
-    
+
     // isLoading now primarily reflects the refresh operation's status,
     // or initial load if _allCoins is empty AND not yet successfully refreshed.
     val isLoading: StateFlow<Boolean> = combine(
-        _allCoins, 
+        _allCoins,
         _isLoadingFromRefresh,
         _initialLoadAttempted
     ) { allCoins, isRefreshing, initialLoadAttempted ->
@@ -67,7 +67,7 @@ class CoinListViewModel @Inject constructor(
         // Initial data refresh; getAllCoins is already being collected by _allCoins
         refreshCoinsData()
     }
-    
+
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
