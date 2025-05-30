@@ -4,13 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme // Keep for preview if needed, but CryptoTrackerTheme is primary
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.cryptotracker.ui.screens.listings.CoinListScreen
-import com.example.cryptotracker.ui.theme.CryptoTrackerTheme // Import the new theme
+import androidx.navigation.compose.rememberNavController
+import com.example.cryptotracker.ui.AppNavHost // Import AppNavHost
+import com.example.cryptotracker.ui.screens.listings.CoinListScreen // Keep for preview if needed
+import com.example.cryptotracker.ui.theme.CryptoTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,12 +20,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CryptoTrackerTheme { // Use the new application theme
+            CryptoTrackerTheme {
+                val navController = rememberNavController() // Create NavController
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background // MaterialTheme can be used here to get scheme
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    CoinListScreen() // Display the new screen
+                    AppNavHost(navController = navController) // Set up NavHost
                 }
             }
         }
@@ -33,15 +36,15 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    CryptoTrackerTheme { // Use the new application theme for preview
+    CryptoTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            // Previewing CoinListScreen directly.
-            // For a more robust preview, you might want to pass a mock ViewModel
-            // or use a simpler Composable if CoinListScreen has complex dependencies.
-            CoinListScreen()
+            // For previewing specific screens that might need a NavController or are part of navigation,
+            // you might call them directly or wrap with a preview-specific NavController.
+            // Here, previewing CoinListScreen as it was. AppNavHost itself is harder to preview directly with all routes.
+            CoinListScreen(onCoinClick = {}) // Pass an empty lambda for onCoinClick in preview
         }
     }
 }
