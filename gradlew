@@ -16,35 +16,11 @@
 # limitations under the License.
 #
 
-#*****************************************************************************
-#
-#   Gradle start up script for UN*X
-#
-#*****************************************************************************
-
-# Attempt to set APP_HOME
-# Resolve links: $0 may be a link
-PRG="$0"
-# Need this for relative symlinks.
-while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-        PRG="$link"
-    else
-        PRG=`dirname "$PRG"`"/$link"
-    fi
-done
-SAVED="`pwd`"
-cd "`dirname \"$PRG\"`/" >/dev/null
-APP_HOME="`pwd -P`"
-cd "$SAVED" >/dev/null
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS=""
 
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
-
-# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
@@ -55,7 +31,7 @@ warn () {
 
 die () {
     echo
-    echo "$*"
+    echo "ERROR: $*"
     echo
     exit 1
 }
@@ -80,8 +56,28 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+CLASSPATH_SEPARATOR=:
+if $cygwin || $msys; then
+  CLASSPATH_SEPARATOR=\;
+fi
 
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+APP_HOME=`dirname "$PRG"`
+
+# Absolutize APP_HOME
+APP_HOME=`cd "$APP_HOME" && pwd`
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -105,8 +101,8 @@ Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
 fi
 
-# Increase the maximum number of open files if necessary.
-if [ "$cygwin" = "false" -a "$msys" = "false" -a "$nonstop" = "false" ] ; then
+# Increase the maximum file descriptors if we can.
+if ! $cygwin && ! $msys && ! $darwin && ! $nonstop; then
     MAX_FD_LIMIT=`ulimit -H -n`
     if [ $? -eq 0 ] ; then
         if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
@@ -121,35 +117,32 @@ if [ "$cygwin" = "false" -a "$msys" = "false" -a "$nonstop" = "false" ] ; then
     fi
 fi
 
-# For Darwin, add options to specify how the application appears in the dock;
-# also pass a default JAVA_OPTS if none is specified.
-if $darwin; then
-    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
-fi
+# Collect all arguments for passing to Gradle.
+# Support for passing arguments with spaces is not best effort, but does work in most common cases.
+# Minimal quoting of args when appropriate is used. This is based on the approach used by unixutils options.awk.
+GRADLE_OPTS=
+for arg in "$@" ; do
+  case "$arg" in
+    # Handle args with equals signs, like --foo=bar. We need to quote the equals sign.
+    *=*) GRADLE_OPTS="$GRADLE_OPTS \"$arg\"" ;;
+    # Handle args with spaces. We need to quote the whole arg.
+    *\ *) GRADLE_OPTS="$GRADLE_OPTS \"$arg\"" ;;
+    # Handle args with only safe characters. No quoting needed.
+    *[A-Za-z0-9]*) GRADLE_OPTS="$GRADLE_OPTS $arg" ;;
+    # Default: just pass the arg. If it is problematic, use a solution like the equals sign or space handling.
+    *) GRADLE_OPTS="$GRADLE_OPTS $arg" ;;
+  esac
+done
 
-# For Cygwin or MSYS, switch paths to Windows format before running java
-if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
-    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
-    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
-    JAVACMD=`cygpath --path --mixed "$JAVACMD"`
+# Add the jar to the classpath
+# Defines where the gradle wrapper jar is located
+WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+# Add the command line client jar to the classpath
+# No command line client jar as of gradle 7.x. Remove this line.
+# GRADLE_COMMAND_LINE_CLIENT_JAR="$APP_HOME/gradle/wrapper/gradle-cli.jar"
+# CLASSPATH="$WRAPPER_JAR${CLASSPATH_SEPARATOR}${GRADLE_COMMAND_LINE_CLIENT_JAR}"
+CLASSPATH="$WRAPPER_JAR"
 
-    # We build the pattern for arguments to be converted to Windows paths
-    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
-    SEP=""
-    for dir in $ROOTDIRSRAW ; do
-        ROOTDIRS="$ROOTDIRS$SEP$dir"
-        SEP="|"
-    done
-    PATTERNS="^($ROOTDIRS)"
-    GRADLE_OPTS=`echo "$GRADLE_OPTS" | sed -e 's#\(/\*[^ ]*\)#`cygpath --path --mixed "\1"`#g' -e "s#\($PATTERNS\)\(\/\)#\1\\\\#g"`
-    JAVA_OPTS=`echo "$JAVA_OPTS" | sed -e 's#\(/\*[^ ]*\)#`cygpath --path --mixed "\1"`#g' -e "s#\($PATTERNS\)\(\/\)#\1\\\\#g"`
-fi
 
-# Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
-function splitJvmOpts() {
-    JVM_OPTS=("$@")
-}
-eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
-JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
-
-exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+# Execute Gradle
+exec "$JAVACMD" "$DEFAULT_JVM_OPTS" "$JAVA_OPTS" "$GRADLE_OPTS" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
